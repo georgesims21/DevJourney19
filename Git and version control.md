@@ -83,8 +83,8 @@ Within the file, it is possible to ignore singular files, or even wild cards, me
 
 ```bash
 # Within the .gitignore file
-.project 	# Ignore singular file
-*.py 		# Ignore all .py files (wildcard)
+.project  # Ignore singular file
+*.py  # Ignore all .py files (wildcard)
 ```
 
 Once this .gitignore is defined and saved, running the command *git status* again will show that they are now *invisible* to git and aren't picked up anymore.
@@ -99,20 +99,28 @@ The useful thing about staging files is if lots of files have been modified by y
 
 ```bash
 git add -A 	# Add all files in dir to staging area
-git add .project hello.py	# Add files singularly
+git add .project hello.py  # Add files singularly
 ```
+
+**add -A** - *Will stage all files including new, deleted, modified and dot files in the entire working tree. This means any outside the working directory will also be staged if edited.*
+
+**add -u** - *Adds all modified and deleted files for the whole tree, but not the untracked files (new files).*
+
+**add .** - *Difference between this and -A we see that it will only stage files in the current->lowest branch of the working tree.*
+
+**add *** - *Not recommended due to the * being a shell command, so git may not interpret it correctly.*
 
 #### Unstage file(s)
 
 ```bash
-git reset	# Remove all files from staging area
-git reset .project	# Remove files singularly
+git reset  # Remove all files from staging area
+git reset .project  # Remove files singularly
 ```
 
 #### Committing
 
 ```bash
-git commit -m "<Enter commit message>" # -m is a commit message
+git commit -m "<Enter commit message>"  # -m is a commit message
 ```
 
 #### Logs
@@ -152,7 +160,7 @@ git log --stat
 ```bash
 touch <filename>
 git add <filename>
-git commit --amend # Puts created file to last commit
+git commit --amend  # Puts created file to last commit
 # Also brings up editor allowing for extra changes
 ```
 
@@ -161,7 +169,7 @@ git commit --amend # Puts created file to last commit
 ```bash
 git log
 # Copy hash of the commit you want to copy (6 chars is enough)
-git checkout <branch name> # Branch to move commit to
+git checkout <branch name>  # Branch to move commit to
 git cherry-pick <copied hash number>
 # Checkout to original branch
 git log
@@ -184,17 +192,17 @@ git clean -df
 **This will only be allowed before 30 days or so from the deletion.**
 
 ```bash
-git reflog # Shows order of commits from when last referenced
+git reflog  # Shows order of commits from when last referenced
 # Copy commit hash value you wish to get back
 git checkout <copied hash value>
-git log # You will see changes made in this commit
-git branch <backup branch name> # Create branch to save to
+git log  # You will see changes made in this commit
+git branch <backup branch name>  # Create branch to save to
 
 # To confirm the changes were saved
 git checkout master
-git branch # Does the <backup branch name> exist?
+git branch  # Does the <backup branch name> exist?
 git checkout <backup branch name>
-git log # Compare hash value of most recent to one copied earlier
+git log  # Compare hash value of most recent to one copied earlier
 ```
 
 
@@ -210,15 +218,15 @@ git log # Compare hash value of most recent to one copied earlier
 #### Cloning
 
 ```bash
-git clone <url>	# The url must end with .git, so github or local
-git clone <url> . # Clones <url> files into current dir, no new dir
+git clone <url>	 # The url must end with .git, so github or local
+git clone <url> .  # Clones <url> files into current dir, no new dir
 ```
 
 #### Fetching info
 
 ```bash
-git remote -v 	# Shows remote repo info
-git branch -a	# Shows all branches of repo
+git remote -v  # Shows remote repo info
+git branch -a  # Shows all branches of repo
 ```
 
 #### See changes made to files
@@ -232,7 +240,7 @@ git diff
 This command is important when working with other developers as it pulls the most recent commit from the remote to the local repository.
 
 ```bash
-git pull origin master # Origin is remote name, master is branch
+git pull origin master  # Origin is remote name, master is branch
 ```
 
 #### Push changes
@@ -284,7 +292,7 @@ git branch <branch name>
 #### List all branches
 
 ```bash
-git branch -a # The current working branch is highlighted in green
+git branch -a  # The current working branch is highlighted in green
 ```
 
 #### Change working branch
@@ -317,20 +325,70 @@ git push
 #### Merging
 
 ```bash
-git checkout master # Change working branch to master
+git checkout master  # Change working branch to master
 git pull origin master
-git branch --merged # Will say the branches merged so far
-git merge <branch name> # Merge into master
-git push origin master # Push to master on remote repo
+git branch --merged  # Will say the branches merged so far
+git merge <branch name>  # Merge into master
+git push origin master  # Push to master on remote repo
 ```
 
 #### Deleting
 
 ```bash
-git branch --merged # Check if <branch name> merged successfully
-git branch -d <branch name> # Delete the branch locally
-git branch -a # Check if it still exists on remote repo
-git push origin --delete <branch name> # Delete from remote too
+git branch --merged  # Check if <branch name> merged successfully
+git branch -d <branch name>  # Delete the branch locally
+git branch -a  # Check if it still exists on remote repo
+git push origin --delete <branch name>  # Delete from remote too
 ```
 
- 
+ ### Stashing
+
+This is where you may be done with a particular part of work, but not yet ready to commit. You may need to switch branches but *save* your current work before you do, which is exactly what the stash command does, saving your progress in a temporary place so you can come back to it later. This temp place is a stack data structure. LIFO.
+
+```bash
+git stash save "Some save message"
+# At this point the changes will dissapear from the status
+git stash list  # List all stashes (stash@{1}, stash@{...}, etc)
+```
+
+#### Unstashing
+
+```bash
+git stash apply stash@{<stash no.>}
+# Restores stash but keeps stash in stash list
+```
+
+```bash
+git stash pop 
+# Pops last stash from stash stack while restoring stash
+```
+
+#### Delete a stash
+
+```bash
+git stash drop stash@{<stash no.>}  # Removes from stash stack
+```
+
+```bash
+git stash clear  # Deletes all stashes in stack
+```
+
+#### Transfer changes to different branch
+
+A stash can be used across all branches, so if you stash a change, that stash can be applied/popped onto another branch without effecting the current.
+
+```bash
+git stash save  # On files you wish to transfer
+git checkout <other branch>
+git stash pop
+git diff  # To check the changes
+git add .
+git commit -m "Some commit message"
+```
+
+---
+
+## Additional tools
+
+---
+
